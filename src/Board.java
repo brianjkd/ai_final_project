@@ -293,7 +293,6 @@ public class Board extends JPanel {
                     return;
                 }
 
-                String str;
                 if (!pressedCell.isMarked()) {
                     pressedCell.setMark(true);
                     remainderMines--;
