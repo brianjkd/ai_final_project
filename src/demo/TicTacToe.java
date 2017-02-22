@@ -46,6 +46,39 @@ public class TicTacToe {
 		return false;
 	}
 	
+	private static int getBoardSum(Square [][] board, Square type){
+		//81 is the value of a board where all squares are of the given type.
+		//This is just to avoid the sum being negative (if all square of not of the given type).
+		int sum = 81;
+		
+		// check vertical
+		sum += board[0][0].get() + board[1][0].get() + board[2][0].get();
+		sum += board[0][1].get() + board[1][1].get() + board[2][1].get();
+		sum += board[0][2].get() + board[1][2].get() + board[2][2].get();
+		
+		// check horizontal
+		sum += board[0][0].get() + board[0][1].get() + board[0][2].get();
+		sum += board[1][0].get() + board[1][1].get() + board[1][2].get();
+		sum += board[2][0].get() + board[2][1].get() + board[2][2].get();
+		
+		//check diagonal
+		sum += board[0][0].get() + board[1][1].get() + board[2][2].get();
+		sum += board[0][2].get() + board[1][1].get() + board[0][0].get();
+
+		return sum;
+	}
+	
+	static int getBoardFitness(Square [][] board, Square type) {
+		int winBonus = 100;
+		int sum = getBoardSum(board, type);
+		
+		if (hasWon(board, type)) {
+			sum += winBonus;
+		}
+		
+		return sum;
+	}
+	
 
 	public static void main(String[] args){
 		Square [][] board = createBoard();
