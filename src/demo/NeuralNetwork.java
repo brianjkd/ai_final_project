@@ -7,6 +7,10 @@ public class NeuralNetwork {
   int numOutputs;
   int numHiddenLayers;
   int NeuronsPerHiddenLayer;
+  //for tweeking the sigmoid function
+  static double dActivationResponse = 1d;
+  //bias value
+  static double dBias = 1d;
   
   // static int CParams = 2;
 
@@ -50,12 +54,12 @@ public class NeuralNetwork {
           netinput += neuronLayers.get(i).neurons.get(j).weights.get(k) * inputs.get(cWeight++);
         }
         //add in the bias
-        netinput += neuronLayers.get(i).neurons.get(j).weights.get(NumInputs -1 ) * CParams::dBias;
+        netinput += neuronLayers.get(i).neurons.get(j).weights.get(NumInputs -1 ) * dBias;
 
         //we can store the outputs from each layer as we generate them.
         //The combined activation is first filtered through the sigmoid
         //function
-        outputs.push_back(Sigmoid(netinput, CParams::dActivationResponse));
+        outputs.push_back(Sigmoid(netinput, dActivationResponse));
         cWeight = 0;
       }
     }
