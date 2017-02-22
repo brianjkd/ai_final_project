@@ -1,19 +1,5 @@
 package demo;
 
-
-enum Square {
-    X(-1), O(1), EMPTY(0);
-    private int value;
-
-    Square(int value) {
-        this.value = value;
-    }
-
-    public int get() {
-        return value;
-    }
-}
-
 public class TicTacToe {
 	
 	static void displayBoard(Square[][] board){
@@ -61,13 +47,14 @@ public class TicTacToe {
 	}
 	
 
-	
 	public static void main(String[] args){
 		Square [][] board = createBoard();
 		doValidMove(board, Square.X, 1,2);
-		doValidMove(board, Square.X, 0,0);
+		doValidMove(board, Square.O, 0,0);
 		doValidMove(board, Square.X, 2,2);
 		displayBoard(board);
+		
+		NeuralNetwork n = new NeuralNetwork(board);
 	}
 		
 }

@@ -11,14 +11,33 @@ public class NeuralNetwork {
   static double dActivationResponse = 1d;
   //bias value
   static double dBias = 1d;
-  
-  // static int CParams = 2;
 
   //storage for each layer of neurons including the output layer
+  // Note: the input is not part of the layers
   ArrayList<NeuronLayer> neuronLayers;
   
   
-  ArrayList<Double> update(ArrayList<Double> inputs)
+
+  
+  NeuralNetwork(Square [][]board){	  
+	  numInputs = board.length * board[0].length; // should be 9
+	  System.out.println(numInputs);
+	  
+	  int [] input = new int [9];
+	  
+	  // take our board and make our input array
+		for(int i = 0; i < board.length; i++){
+			for(int j = 0; j < board[0].length; j++){
+				input[i+j] = board[i][j].get();
+			}
+		}
+	  
+		//for (int i = 0)
+	  System.out.println(input.toString());
+  }
+  
+  
+/*  ArrayList<Double> update(ArrayList<Double> inputs)
   {
     //stores the resultant outputs from each layer
     ArrayList<Double> outputs;
@@ -64,7 +83,7 @@ public class NeuralNetwork {
       }
     }
     return outputs;
-  }
+  }*/
 
 
 }
