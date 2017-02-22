@@ -9,6 +9,7 @@ public class Neuron {
 	
 	public Neuron(int numberOfInputs){
 		this.numberOfInputs =numberOfInputs;
+		this.weights = new ArrayList<>();
 		// initialize with random weights
 		for (int i = 0; i < numberOfInputs + 1; i++){
 			double randWeight = Math.random();

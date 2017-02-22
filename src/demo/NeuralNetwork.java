@@ -21,19 +21,34 @@ public class NeuralNetwork {
   
   NeuralNetwork(Square [][]board){	  
 	  numInputs = board.length * board[0].length; // should be 9
-	  System.out.println(numInputs);
+	  neuronLayers = new ArrayList<>();
 	  
-	  int [] input = new int [9];
+	  ArrayList<Integer> input = new ArrayList<>();
 	  
 	  // take our board and make our input array
 		for(int i = 0; i < board.length; i++){
 			for(int j = 0; j < board[0].length; j++){
-				input[i+j] = board[i][j].get();
+				input.add(board[i][j].get());
 			}
 		}
 	  
-		//for (int i = 0)
-	  System.out.println(input.toString());
+	/*	for (int i = 0; i < 9; i ++){
+			System.out.print(input[i]);
+		}
+		*/
+		ArrayList<Neuron> neurons = new ArrayList<>();
+		for (int i = 0; i < input.size(); i++){
+			Neuron n = new Neuron(input.size());
+			neurons.add(n);
+		}
+		NeuronLayer hiddenLayer = new NeuronLayer(neurons);
+		neuronLayers.add(hiddenLayer);
+		
+		Neuron o = new Neuron(neuronLayers.get(neuronLayers.size() -1).neurons.size());
+		ArrayList<Neuron> outputNeurons = new ArrayList<Neuron>();
+		outputNeurons.add(o);
+		NeuronLayer outputLayer = new NeuronLayer(outputNeurons);
+		neuronLayers.add(outputLayer);	
   }
   
   
