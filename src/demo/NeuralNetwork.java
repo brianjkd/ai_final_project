@@ -1,6 +1,7 @@
 package demo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class NeuralNetwork {
 
@@ -49,5 +50,31 @@ public class NeuralNetwork {
 		}
 		NeuronLayer outputLayer = new NeuronLayer(outputNeurons);
 		neuronLayers.add(outputLayer);
+	}
+	
+	public int chooseMove(ArrayList<Double> moves) {
+		int move = moves.indexOf(Collections.max(moves));
+		return move;
+	}
+	
+	public ArrayList<Double> activation(NeuronLayer layer, ArrayList<Integer> inputs) {
+		ArrayList<Double> outputs = new ArrayList<Double>();
+		
+		for (Neuron n : layer.neurons) {
+			double sum = 0;
+			for (int i = 0; i < inputs.size(); i++) {
+				sum += inputs.get(i) * n.weights.get(i);
+			}
+			sum = sigmoid(sum);
+			outputs.add(sum);
+		}
+		
+		return outputs;
+	}
+	
+	public double sigmoid(double input) {
+		double result = 0;
+		result = 1d/(1d + Math.pow(Math.E, -(input)));
+		return result;
 	}
 }
