@@ -1,8 +1,11 @@
 package demo;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 public class TicTacToe {
 	
-	static void displayBoard(Square[][] board){
+	public static void displayBoard(Square[][] board){
 		for(int i = 0; i < board[0].length; i++){
 			for(int j = 0; j < board[0].length; j++){
 				if (board[i][j] == Square.EMPTY)
@@ -14,7 +17,7 @@ public class TicTacToe {
 		}
 	}
 	
-	static Square [][] createBoard(){
+	public static Square [][] createBoard(){
 		Square [][] board = new Square [3][3];
 		for(int i = 0; i < board[0].length; i++){
 			for(int j = 0; j < board[0].length; j++){
@@ -24,12 +27,23 @@ public class TicTacToe {
 		return board;
 	}
 	
-	
-	static void doValidMove(Square [][] board, Square type, int r, int c){
-		board[r][c] = type;
+	static Square [][] duplicateBoard(Square [][] original){
+		Square [][] duplicate = new Square [3][3];
+		for(int i = 0; i < original[0].length; i++){
+			for(int j = 0; j < original[0].length; j++){
+				duplicate[i][j] = original[i][j];
+			}	
+		}
+		return duplicate;
 	}
 	
-	static boolean hasWon(Square [][] board, Square type){
+	public static Square [][] doValidMove(Square [][] board, Square type, Vector2D destination){
+		Square [][] result = duplicateBoard(board);
+		result[destination.row][destination.col] = type;
+		return result;
+	}
+	
+	public static boolean hasWon(Square [][] board, Square type){
 		// check vertical
 		if (board[0][0].get() + board[1][0].get() + board[2][0].get() == 3 * type.get()) return true;
 		if (board[0][1].get() + board[1][1].get() + board[2][1].get() == 3 * type.get()) return true;
@@ -68,26 +82,91 @@ public class TicTacToe {
 		return sum;
 	}
 	
-	static int getBoardFitness(Square [][] board, Square type) {
-		int winBonus = 100;
-		int sum = getBoardSum(board, type);
-		
-		if (hasWon(board, type)) {
-			sum += winBonus;
-		}
-		
-		return sum;
+	
+	public static boolean isMoveValid(Square [][] board, Vector2D destination){
+		return board[destination.row][destination.col] == Square.EMPTY;
 	}
 	
-
-	public static void main(String[] args){
-		Square [][] board = createBoard();
-		doValidMove(board, Square.X, 1,2);
-		doValidMove(board, Square.O, 0,0);
-		doValidMove(board, Square.X, 2,2);
-		displayBoard(board);
+	static Vector2D convertIndexToRowCol(int index){
+		// index lies between [0,8] inclusively
+		int row = (index) / 3;
+		int col = (index) % 3;
+		Vector2D c = new Vector2D(row, col);
+		return c;
+	}
+	
+	public static int getBoardFitness(Square [][] board, Square aspect, int destination) {
+		int bad = 0;
+		int winValue = 100;
 		
-		NeuralNetwork n = new NeuralNetwork(board);
+		Vector2D destinationCoordinate = convertIndexToRowCol(destination);
+		// invalid move
+		if (!isMoveValid(board, destinationCoordinate )){
+			return bad;
+		}
+		
+		board = doValidMove(board, aspect, destinationCoordinate);
+		
+		// did win?
+		if (hasWon(board, aspect)) {
+			return winValue;
+		}
+		
+		// TODO need to make sure the board is not already full/ we have drawn
+		// though, we should handles this else where, like we should not be 
+		// evaluating the neural network when the game is already complete.
+		// will only confuse the NN
+		
+		// did opponent randomly win in the next turn
+		Square opponentType = (aspect == Square.O ? Square.X : Square.O);
+		Square [][] futureBoard = randomMove(board, opponentType);
+		if (hasWon(futureBoard, opponentType)) {
+			return bad;
+		}
+		
+		int sum = getBoardSum(board, aspect);
+		return sum;
+	}
+
+	
+	public static Square [][] randomMove(Square [][] board, Square aspect){
+		ArrayList<Vector2D> availableMoves = new ArrayList<>();
+		for(int i = 0; i < board[0].length; i++){
+			for(int j = 0; j < board[0].length; j++){
+				if (board[i][j] == Square.EMPTY){
+					availableMoves.add(new Vector2D(i,j));
+				}
+			}	
+		}
+		Random random = new Random();
+		int randIndex = random.nextInt(availableMoves.size());
+		
+		Vector2D moveToDo = availableMoves.get(randIndex);
+		Square [][] result = duplicateBoard(board);
+		result[moveToDo.row][moveToDo.col] = aspect;
+		return result;
+	}
+	
+	static Square whoIsTurn(Square [][] board){
+		int countX = 0;
+		int countO = 0;
+		for(int i = 0; i < board[0].length; i++){
+			for(int j = 0; j < board[0].length; j++){
+				if (board[i][j] == Square.X){
+					countX++;
+				}
+				else if (board[i][j] == Square.O){
+					countO++;
+				}
+			}	
+		}
+		if (countX == countO){
+			return Square.X;
+		}
+		else if (countX == countO + 1){
+			return Square.O;
+		}
+		return null;
 	}
 		
 }

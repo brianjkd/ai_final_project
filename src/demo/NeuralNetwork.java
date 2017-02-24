@@ -4,30 +4,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class NeuralNetwork {
+/*	private int numHiddenLayers;
+	private int NeuronsPerHiddenLayer;
+	private int inputSize;*/
+	private ArrayList<NeuronLayer> neuronLayers;
+	private int totalFitness;
+	
+	
+	public int getTotalFitness(){
+		return totalFitness;
+	}
 
-/*	int numInputs;
-	int numOutputs;*/
-	int numHiddenLayers;
-	int NeuronsPerHiddenLayer;
-/*	// for tweeking the sigmoid function
-	static double dActivationResponse = 1d;
-	// bias value
-	static double dBias = 1d;*/
-
-	// storage for each layer of neurons including the output layer
-	// Note: the input is not part of the layers
-	ArrayList<NeuronLayer> neuronLayers;
-
-	NeuralNetwork(Square[][] board) {
-		// numInputs = board.length * board[0].length; // should be 9
+	public void setTotalFitness(int totalFitness){
+		this.totalFitness = totalFitness;
+	}
+	
+	public NeuralNetwork(int inputSize) {
+		//this.inputSize = inputSize;
 		neuronLayers = new ArrayList<>();
-
-		ArrayList<Integer> input = new ArrayList<>();
-		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board[0].length; j++) {
-				input.add(board[i][j].get());
-			}
-		}
 		
 		/**
 		 * Create Hidden Layer
@@ -44,20 +38,26 @@ public class NeuralNetwork {
 		 * Create Output Layer
 		 */
 		ArrayList<Neuron> outputNeurons = new ArrayList<>();
-		for (int i = 0; i < input.size(); i++) {
-			Neuron n = new Neuron(input.size());
+		for (int i = 0; i < inputSize; i++) {
+			Neuron n = new Neuron(inputSize);
 			outputNeurons.add(n);
 		}
 		NeuronLayer outputLayer = new NeuronLayer(outputNeurons);
 		neuronLayers.add(outputLayer);
 	}
 	
-	public int chooseMove(ArrayList<Double> moves) {
-		int move = moves.indexOf(Collections.max(moves));
-		return move;
+	public int evaluateNN(Square [][] inputBoard){
+		ArrayList<Integer> input = new ArrayList<>();
+		for (int i = 0; i < inputBoard.length; i++) {
+			for (int j = 0; j < inputBoard[0].length; j++) {
+				input.add(inputBoard[i][j].get());
+			}
+		}
+		ArrayList<Double> moves = activation(neuronLayers.get(0), input);
+		return chooseMove(moves);
 	}
 	
-	public ArrayList<Double> activation(NeuronLayer layer, ArrayList<Integer> inputs) {
+	private ArrayList<Double> activation(NeuronLayer layer, ArrayList<Integer> inputs) {
 		ArrayList<Double> outputs = new ArrayList<Double>();
 		
 		for (Neuron n : layer.neurons) {
@@ -68,11 +68,15 @@ public class NeuralNetwork {
 			sum = sigmoid(sum);
 			outputs.add(sum);
 		}
-		
 		return outputs;
 	}
 	
-	public double sigmoid(double input) {
+	private int chooseMove(ArrayList<Double> moves) {
+		int move = moves.indexOf(Collections.max(moves));
+		return move;
+	}
+		
+	private double sigmoid(double input) {
 		double result = 0;
 		result = 1d/(1d + Math.pow(Math.E, -(input)));
 		return result;
