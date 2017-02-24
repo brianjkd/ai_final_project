@@ -29,6 +29,7 @@ public class Training {
 				Square aspect = TicTacToe.whoIsTurn(board); // who's turn it is
 				int score = TicTacToe.getBoardFitness(board, aspect, destination);
 				scoreSum += score;
+				System.out.println("score from evaluation : " + score);
 			}
 			n.setTotalFitness(scoreSum / trainingSize);
 		}

@@ -105,10 +105,10 @@ public class TicTacToe {
 			return bad;
 		}
 		
-		board = doValidMove(board, aspect, destinationCoordinate);
+		Square [] [] resultingBoard = doValidMove(board, aspect, destinationCoordinate);
 		
 		// did win?
-		if (hasWon(board, aspect)) {
+		if (hasWon(resultingBoard, aspect)) {
 			return winValue;
 		}
 		
@@ -119,12 +119,12 @@ public class TicTacToe {
 		
 		// did opponent randomly win in the next turn
 		Square opponentType = (aspect == Square.O ? Square.X : Square.O);
-		Square [][] futureBoard = randomMove(board, opponentType);
+		Square [][] futureBoard = randomMove(resultingBoard, opponentType);
 		if (hasWon(futureBoard, opponentType)) {
 			return bad;
 		}
 		
-		int sum = getBoardSum(board, aspect);
+		int sum = getBoardSum(resultingBoard, aspect);
 		return sum;
 	}
 
