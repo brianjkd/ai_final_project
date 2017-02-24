@@ -2,6 +2,7 @@ package demo;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class NeuralNetwork {
 /*	private int numHiddenLayers;
@@ -18,11 +19,58 @@ public class NeuralNetwork {
 	public void setTotalFitness(int totalFitness){
 		this.totalFitness = totalFitness;
 	}
+
+	
+	public void crossover(NeuralNetwork a, NeuralNetwork b){
+		// figure out our cut points
+		ArrayList<Integer> cutPoints = new ArrayList<>();
+		
+		for (NeuronLayer layer : a.neuronLayers){
+			int min = 0;
+			int max = layer.neurons.size();
+			int cut = ThreadLocalRandom.current().nextInt(min, max);
+			cutPoints.add(cut);
+		}
+		
+		NeuralNetwork childOne = reproduce(a, b, cutPoints);
+		NeuralNetwork childTwo = reproduce(b, a, cutPoints);
+	}
+	
+
+	public NeuralNetwork reproduce(NeuralNetwork a, NeuralNetwork b, ArrayList<Integer> cutPoints){
+		
+		ArrayList<NeuronLayer> neuronLayers = new ArrayList<>();
+		
+		for (int i = 0; i < a.neuronLayers.size(); i ++){
+			int cutPoint = cutPoints.get(i);
+			ArrayList<Neuron> layer = new ArrayList<>();
+			for(int j = 0; j < cutPoint; j++){
+				Neuron n = new Neuron(a.neuronLayers.get(i).neurons.get(j));
+				layer.add(n);
+			}
+			
+			for (int j = cutPoint; j < a.neuronLayers.get(i).neurons.size(); j++){
+				Neuron n = new Neuron(b.neuronLayers.get(i).neurons.get(j));
+				layer.add(n);
+			}
+			NeuronLayer nl = new NeuronLayer(layer);
+			neuronLayers.add(nl);
+		}
+		
+		NeuralNetwork c = new NeuralNetwork(neuronLayers);
+		return c;
+	}
+	
+	
+	private NeuralNetwork(ArrayList<NeuronLayer> neuronLayers){
+		this.neuronLayers = neuronLayers;
+	}
+	
 	
 	public NeuralNetwork(int inputSize) {
 		//this.inputSize = inputSize;
 		neuronLayers = new ArrayList<>();
-		
+	
 		/**
 		 * Create Hidden Layer
 		 */

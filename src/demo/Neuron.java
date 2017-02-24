@@ -16,5 +16,18 @@ public class Neuron {
 			weights.add(randWeight);
 		}
 	}
-
+	
+	/** 
+	 * Make a duplicate of the neuron
+	 * @param other
+	 */
+	public Neuron(Neuron other){
+		this.numberOfInputs = other.numberOfInputs;
+		this.weights = new ArrayList<>();
+		for(Double w : other.weights){
+			weights.add(w);
+		}
+	}
+	
+	
 }
