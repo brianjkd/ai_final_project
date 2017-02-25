@@ -9,7 +9,7 @@ public class TicTacToe {
 		for(int i = 0; i < board[0].length; i++){
 			for(int j = 0; j < board[0].length; j++){
 				if (board[i][j] == Square.EMPTY)
-					System.out.print("  ");
+					System.out.print("- ");
 				else 
 					System.out.print(board[i][j] + " ");
 			}
@@ -42,6 +42,25 @@ public class TicTacToe {
 		result[destination.row][destination.col] = type;
 		return result;
 	}
+	
+	public static boolean isBoardFull(Square [][] board){
+		int emptySquares = 0;
+		for(int i = 0; i < board[0].length; i++){
+			for(int j = 0; j < board[0].length; j++){
+				if (board[i][j] == Square.EMPTY){
+					emptySquares++;
+				}
+			}	
+		}
+		return emptySquares == 0;
+	}
+	
+	public static boolean isGameOver(Square [][] board){
+		return (   hasWon(board, Square.X)	
+				|| hasWon(board, Square.O)
+				|| isBoardFull(board));		
+	}
+	
 	
 	public static boolean hasWon(Square [][] board, Square type){
 		// check vertical
@@ -163,7 +182,7 @@ public class TicTacToe {
 		if (countX == countO){
 			return Square.X;
 		}
-		else if (countX == countO + 1){
+		else if (countO < countX){
 			return Square.O;
 		}
 		return null;

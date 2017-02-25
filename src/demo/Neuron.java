@@ -1,9 +1,10 @@
 package demo;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 
-public class Neuron {
-	
+public class Neuron implements Serializable{
+	private static final long serialVersionUID = 7117372304753499139L;
 	public int numberOfInputs;
 	public ArrayList<Double> weights;
 	

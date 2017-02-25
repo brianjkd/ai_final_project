@@ -1,15 +1,22 @@
 package demo;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class NeuralNetwork implements Comparable<NeuralNetwork>{
-/*	private int numHiddenLayers;
-	private int NeuronsPerHiddenLayer;
-	private int inputSize;*/
+public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
+	private static final long serialVersionUID = 2751926090659843399L;
+	private static String PATH = "trainingData/neuralNetwork.ser";
 	ArrayList<NeuronLayer> neuronLayers;
 	private int totalFitness;
+	
+	ArrayList<Square[][]> trainingBoards = new ArrayList<>();
 	
 	public int getTotalFitness(){
 		return totalFitness;
@@ -41,21 +48,63 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>{
 		double rate = 0.3; // mutation 10% of all weights
 		for (NeuronLayer neuronLayer : neuronLayers){
 			for (Neuron n : neuronLayer.neurons){
-				for (Double w : n.weights){
+				for (int i = 0 ; i < n.weights.size(); i ++){
 					double rand = Math.random();
 					if (rand <= rate){
 						// mutate the weight
-						w = new Double((Math.random()));
+						n.weights.set(i, new Double((Math.random())));
 					}
 				}
 			}
 		}
 	}
 	
+	public static void saveBestNNToFile(ArrayList<NeuralNetwork> neuralNetworks){
+		Collections.sort(neuralNetworks);
+		saveNNToFile(neuralNetworks.get(0));		
+	}
+	
+   public static void saveNNToFile(NeuralNetwork nn) {
+	      try {
+	         FileOutputStream fileOut = new FileOutputStream(PATH);
+	         ObjectOutputStream out = new ObjectOutputStream(fileOut);
+	         out.writeObject(nn);
+	         out.close();
+	         fileOut.close();
+	         System.out.printf("Serialized data is saved in " + PATH);
+	      }catch(IOException i) {
+	         i.printStackTrace();
+	      }
+	   }
+   
+   public static NeuralNetwork loadNNFromFile(){
+	   NeuralNetwork nn = null;
+	      try {
+	         FileInputStream fileIn = new FileInputStream(PATH);
+	         ObjectInputStream in = new ObjectInputStream(fileIn);
+	         nn = (NeuralNetwork) in.readObject();
+	         in.close();
+	         fileIn.close();
+	      }catch(IOException i) {
+	         i.printStackTrace();
+	         return nn;
+	      }catch(ClassNotFoundException c) {
+	         System.out.println("NeuralNetwork class not found");
+	         c.printStackTrace();
+	         return nn;
+	      }
+	      return nn;
+	   }
 
 	public static NeuralNetwork reproduce(NeuralNetwork a, NeuralNetwork b, ArrayList<Integer> cutPoints){
 		
 		ArrayList<NeuronLayer> neuronLayers = new ArrayList<>();
+		// deep copy board array
+		ArrayList<Square [][]> trainingBoards = new ArrayList<>();
+		for (Square[][] board : a.trainingBoards){
+			Square [][] duplicate = TicTacToe.duplicateBoard(board);
+			trainingBoards.add(duplicate);
+		}
 		
 		for (int i = 0; i < a.neuronLayers.size(); i ++){
 			int cutPoint = cutPoints.get(i);
@@ -73,19 +122,29 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>{
 			neuronLayers.add(nl);
 		}
 		
-		NeuralNetwork c = new NeuralNetwork(neuronLayers);
+		NeuralNetwork c = new NeuralNetwork(neuronLayers, trainingBoards);
 		return c;
 	}
 	
 	
-	private NeuralNetwork(ArrayList<NeuronLayer> neuronLayers){
+	private NeuralNetwork(ArrayList<NeuronLayer> neuronLayers, ArrayList<Square [][]> trainingBoards){
 		this.neuronLayers = neuronLayers;
+		this.trainingBoards = trainingBoards;
+	}
+	
+	
+	public ArrayList<Square [][]> makeTrainingBoards(){
+		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
+		for (int j = 1; j <= 14; j++){
+			trainingBoards.add(TrainingBoards.getTrainingBoard(j));
+		}
+		return trainingBoards;
 	}
 	
 	
 	public NeuralNetwork(int inputSize) {
-		//this.inputSize = inputSize;
 		neuronLayers = new ArrayList<>();
+		trainingBoards = makeTrainingBoards();
 	
 		/**
 		 * Create Hidden Layer
@@ -110,7 +169,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>{
 		neuronLayers.add(outputLayer);
 	}
 	
-	public int evaluateNN(Square [][] inputBoard){
+	public int evaluateOutput(Square [][] inputBoard){
 		ArrayList<Integer> input = new ArrayList<>();
 		for (int i = 0; i < inputBoard.length; i++) {
 			for (int j = 0; j < inputBoard[0].length; j++) {
@@ -159,8 +218,5 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>{
 			return 0; // they are equal
 		}
 	}
-	
-	
-	
 	
 }
