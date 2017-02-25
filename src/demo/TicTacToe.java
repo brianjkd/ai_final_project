@@ -104,8 +104,8 @@ public class TicTacToe {
 		if (!isMoveValid(board, destinationCoordinate )){
 			return bad;
 		}
-		
-		Square [] [] resultingBoard = doValidMove(board, aspect, destinationCoordinate);
+		else return 100;
+		/*Square [][] resultingBoard = doValidMove(board, aspect, destinationCoordinate);
 		
 		// did win?
 		if (hasWon(resultingBoard, aspect)) {
@@ -124,9 +124,9 @@ public class TicTacToe {
 			return bad;
 		}
 		
-		int sum = getBoardSum(resultingBoard, aspect);
-		return sum;
-	}
+		// int sum = getBoardSum(resultingBoard, aspect);
+		return 100; // valid move
+*/	}
 
 	
 	public static Square [][] randomMove(Square [][] board, Square aspect){

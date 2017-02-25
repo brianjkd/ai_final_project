@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class NeuralNetwork {
+public class NeuralNetwork implements Comparable<NeuralNetwork>{
 /*	private int numHiddenLayers;
 	private int NeuronsPerHiddenLayer;
 	private int inputSize;*/
-	private ArrayList<NeuronLayer> neuronLayers;
+	ArrayList<NeuronLayer> neuronLayers;
 	private int totalFitness;
-	
 	
 	public int getTotalFitness(){
 		return totalFitness;
@@ -19,25 +18,42 @@ public class NeuralNetwork {
 	public void setTotalFitness(int totalFitness){
 		this.totalFitness = totalFitness;
 	}
-
 	
-	public void crossover(NeuralNetwork a, NeuralNetwork b){
+	public void crossover(NeuralNetwork b){
 		// figure out our cut points
 		ArrayList<Integer> cutPoints = new ArrayList<>();
 		
-		for (NeuronLayer layer : a.neuronLayers){
+		for (NeuronLayer layer : this.neuronLayers){
 			int min = 0;
 			int max = layer.neurons.size();
 			int cut = ThreadLocalRandom.current().nextInt(min, max);
 			cutPoints.add(cut);
 		}
 		
-		NeuralNetwork childOne = reproduce(a, b, cutPoints);
-		NeuralNetwork childTwo = reproduce(b, a, cutPoints);
+		NeuralNetwork childOne = reproduce(this, b, cutPoints);
+		NeuralNetwork childTwo = reproduce(b, this, cutPoints);
+		
+		childOne.mutate();
+		childTwo.mutate();
+	}
+	
+	public void mutate(){
+		double rate = 0.3; // mutation 10% of all weights
+		for (NeuronLayer neuronLayer : neuronLayers){
+			for (Neuron n : neuronLayer.neurons){
+				for (Double w : n.weights){
+					double rand = Math.random();
+					if (rand <= rate){
+						// mutate the weight
+						w = new Double((Math.random()));
+					}
+				}
+			}
+		}
 	}
 	
 
-	public NeuralNetwork reproduce(NeuralNetwork a, NeuralNetwork b, ArrayList<Integer> cutPoints){
+	public static NeuralNetwork reproduce(NeuralNetwork a, NeuralNetwork b, ArrayList<Integer> cutPoints){
 		
 		ArrayList<NeuronLayer> neuronLayers = new ArrayList<>();
 		
@@ -129,4 +145,22 @@ public class NeuralNetwork {
 		result = 1d/(1d + Math.pow(Math.E, -(input)));
 		return result;
 	}
+	
+	
+	@Override
+	public int compareTo(NeuralNetwork other){
+		if (this.getTotalFitness() > other.getTotalFitness()){
+			return -1; // this is greater so comes first
+		}
+		else if (this.getTotalFitness() < other.getTotalFitness()){
+			return 1; // this is less some comes after
+		}
+		else {
+			return 0; // they are equal
+		}
+	}
+	
+	
+	
+	
 }
