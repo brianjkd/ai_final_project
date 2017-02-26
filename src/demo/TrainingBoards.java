@@ -1,6 +1,6 @@
 package demo;
 
-public class TrainingBoards {
+class TrainingBoards {
 	
 	public static Square[][] getTrainingBoard(int board){
 		switch(board){

@@ -8,8 +8,8 @@ public class Training {
 		
 	public static void train(){
 		
-		int populationSize = 100;
-		int numOfIterations = 1000;
+		int populationSize = 40;
+		int numOfIterations = 100;
 		
 		int inputSize = 9;
 		ArrayList<NeuralNetwork> neuralNetworks = new ArrayList<>();
@@ -28,7 +28,10 @@ public class Training {
 	
 	public static void printBestFitness(ArrayList<NeuralNetwork> neuralNetworks){
 		Collections.sort(neuralNetworks);
-		System.out.println("Best fitness is : " + neuralNetworks.get(0).getTotalFitness());
+		NeuralNetwork n = neuralNetworks.get(0);
+		System.out.println("Best fitness is : " + n.getAverageFitness() 
+			+ " generationsLived " + n.getGenerationsLived() 
+			+ " total fitness " + n.getTotalFitness());
 	}
 
 	public static ArrayList<NeuralNetwork> createNextGeneration(
@@ -74,12 +77,13 @@ public class Training {
 		NeuralNetwork chosen = null;
 		while(chosen == null){
 			double rand = Math.random();
-			double maxScore = 100d;
+			
 			for (NeuralNetwork network : neuralNetworks ){
-			double probability = network.getTotalFitness() / maxScore + 0.05;
-				if (rand < probability){
-					chosen = network;				
-				}
+				double maxScore = network.getGenerationsLived() * 100d;
+				double probability = network.getAverageFitness() / maxScore + 0.05;
+					if (rand < probability){
+						chosen = network;				
+					}
 			}
 		}
 		return chosen;
@@ -108,13 +112,13 @@ public class Training {
 							n.trainingBoards.get(i), aspect, destinationCoordinate));
 				}
 			}
-			n.setTotalFitness(scoreSum / trainingBoardSize);
+			n.addTotalFitness(scoreSum);
 		}
 	}
 	
 	public static void main(String[] args){
-		//train();
-		play();
+		 train();
+		 // play();
 		//makeRandomBoards();
 	}
 	
