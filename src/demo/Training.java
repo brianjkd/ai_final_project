@@ -92,7 +92,7 @@ public class Training {
 			for(int i = 0; i < trainingBoardSize; i++){
 				if (TicTacToe.isGameOver(n.trainingBoards.get(i))){
 					//System.out.println("Game complete.");
-					n.trainingBoards.set(i, TicTacToe.createRandomBoard());
+					n.trainingBoards.set(i, TicTacToe.createRandomBoard2());
 				}
 				int destination = n.evaluateOutput(n.trainingBoards.get(i));
 				Vector2D destinationCoordinate = TicTacToe.convertIndexToRowCol(destination);
@@ -122,7 +122,7 @@ public class Training {
 		ArrayList<Square [][]> randomBoards = new ArrayList<>();
 		
 		for (int i = 0; i < 50; i++){
-			Square[][] board = TicTacToe.createRandomBoard();
+			Square[][] board = TicTacToe.createRandomBoard2();
 			randomBoards.add(board);			
 		}		
 		
@@ -138,7 +138,7 @@ public class Training {
 	 */
 	public static void play(){
 		NeuralNetwork a = NeuralNetwork.loadNNFromFile();
-		Square [][] board = TicTacToe.createRandomBoard(); // fresh empty board
+		Square [][] board = TicTacToe.createRandomBoard2(); // fresh empty board
 		
 		int turn = 1;
 		while(!TicTacToe.isGameOver(board)){ // while game is going on

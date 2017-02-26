@@ -140,7 +140,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	public ArrayList<Square [][]> makeTrainingBoards(){
 		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
 		for (int i = 0; i <= 10; i++){
-			trainingBoards.add(TicTacToe.createRandomBoard());
+			trainingBoards.add(TicTacToe.createRandomBoard2());
 			//trainingBoards.add(TrainingBoards.getTrainingBoard(i));
 		}
 		return trainingBoards;
