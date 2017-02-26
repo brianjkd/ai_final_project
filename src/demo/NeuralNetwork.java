@@ -8,7 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	private static final long serialVersionUID = 2751926090659843399L;
@@ -31,9 +31,12 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 		ArrayList<Integer> cutPoints = new ArrayList<>();
 		
 		for (NeuronLayer layer : this.neuronLayers){
-			int min = 0;
+			//int min = 0;
 			int max = layer.neurons.size();
-			int cut = ThreadLocalRandom.current().nextInt(min, max);
+			Random random = new Random();
+
+			int cut = random.nextInt(max);
+			
 			cutPoints.add(cut);
 		}
 		
@@ -45,7 +48,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	}
 	
 	public void mutate(){
-		double rate = 0.3; // mutation 10% of all weights
+		double rate = 0.1; // mutation 10% of all weights
 		for (NeuronLayer neuronLayer : neuronLayers){
 			for (Neuron n : neuronLayer.neurons){
 				for (int i = 0 ; i < n.weights.size(); i ++){
@@ -61,6 +64,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	
 	public static void saveBestNNToFile(ArrayList<NeuralNetwork> neuralNetworks){
 		Collections.sort(neuralNetworks);
+		System.out.println("Total fitness of saved neural network: " + neuralNetworks.get(0).getTotalFitness());
 		saveNNToFile(neuralNetworks.get(0));		
 	}
 	
@@ -71,7 +75,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	         out.writeObject(nn);
 	         out.close();
 	         fileOut.close();
-	         System.out.printf("Serialized data is saved in " + PATH);
+	         System.out.println("Serialized data is saved in " + PATH);
 	      }catch(IOException i) {
 	         i.printStackTrace();
 	      }
@@ -135,8 +139,9 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	
 	public ArrayList<Square [][]> makeTrainingBoards(){
 		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
-		for (int j = 1; j <= 14; j++){
-			trainingBoards.add(TrainingBoards.getTrainingBoard(j));
+		for (int i = 0; i <= 10; i++){
+			trainingBoards.add(TicTacToe.createRandomBoard());
+			//trainingBoards.add(TrainingBoards.getTrainingBoard(i));
 		}
 		return trainingBoards;
 	}
@@ -177,6 +182,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 			}
 		}
 		ArrayList<Double> moves = activation(neuronLayers.get(0), input);
+		//System.out.println("Evaluated output");
 		return chooseMove(moves);
 	}
 	

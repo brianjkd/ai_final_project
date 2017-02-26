@@ -32,7 +32,7 @@ public class TicTacToe {
 		for(int i = 0; i < original[0].length; i++){
 			for(int j = 0; j < original[0].length; j++){
 				duplicate[i][j] = original[i][j];
-			}	
+			}
 		}
 		return duplicate;
 	}
@@ -115,6 +115,7 @@ public class TicTacToe {
 	}
 	
 	public static int getBoardFitness(Square [][] board, Square aspect, int destination) {
+		// System.out.println("Getting Output Fitness.");
 		int bad = 0;
 		int winValue = 100;
 		
@@ -166,6 +167,18 @@ public class TicTacToe {
 		return result;
 	}
 	
+	
+	public static Square [][] createRandomBoard(){
+		Square [][] board = createBoard();
+		Random random = new Random();
+		int numberOfMoves = random.nextInt(9);
+		for (int i = 0; i < numberOfMoves; i++){
+			Square aspect = whoIsTurn(board); 
+			board = randomMove(board, aspect);
+		}
+		return board;
+	}
+	
 	static Square whoIsTurn(Square [][] board){
 		int countX = 0;
 		int countO = 0;
@@ -185,6 +198,7 @@ public class TicTacToe {
 		else if (countO < countX){
 			return Square.O;
 		}
+		System.err.println("Should not be null!");
 		return null;
 	}
 		
