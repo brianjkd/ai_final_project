@@ -1,7 +1,7 @@
 package demo;
 
 public enum Square {
-    X(-1), O(1), EMPTY(0);
+    X(-1), O(1), EMPTY(2);
     private int value;
 
     Square(int value) {

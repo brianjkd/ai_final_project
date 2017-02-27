@@ -7,8 +7,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Training {
 	
 	public static void main(String[] args){
-		// train();
-		  play();
+		 train();
+		 play();
 		//makeRandomBoards();
 	}
 		
@@ -23,6 +23,7 @@ public class Training {
 			NeuralNetwork n = new NeuralNetwork(inputSize);
 			neuralNetworks.add(n);
 		}
+		
 		evaluate(neuralNetworks);
 		
 		for (int i = 0; i < numOfIterations; i++){	
