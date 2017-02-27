@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	private static final long serialVersionUID = 2751926090659843399L;
@@ -64,7 +65,8 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 					double rand = Math.random();
 					if (rand <= rate){
 						// mutate the weight
-						n.weights.set(i, new Double((Math.random())));
+						double randWeight = Neuron.genRandomWeight();
+						n.weights.set(i, randWeight);
 					}
 				}
 			}
@@ -216,7 +218,9 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 			for (int i = 0; i < inputs.size(); i++) {
 				sum += inputs.get(i) * n.weights.get(i);
 			}
+			// System.out.println(sum);
 			sum = sigmoid(sum);
+		
 			outputs.add(sum);
 		}
 		return outputs;

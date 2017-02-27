@@ -7,15 +7,15 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Training {
 	
 	public static void main(String[] args){
-		 train();
-		 // play();
+		// train();
+		  play();
 		//makeRandomBoards();
 	}
 		
 	public static void train(){
 		
-		int populationSize = 40;
-		int numOfIterations = 100;
+		int populationSize = 40; // number of neural networks
+		int numOfIterations = 1000; // number of iterations or generations
 		
 		int inputSize = 9;
 		ArrayList<NeuralNetwork> neuralNetworks = new ArrayList<>();
