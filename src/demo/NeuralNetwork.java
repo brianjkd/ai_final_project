@@ -150,6 +150,16 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	
 	public ArrayList<Square [][]> makeTrainingBoards(){
 		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
+		for (int i = 1; i <= 10; i++){
+			//trainingBoards.add(TicTacToe.createRandomBoard2());
+			trainingBoards.add(TrainingBoards.getTrainingBoard(i));
+		}
+		return trainingBoards;
+	}
+	
+	
+	public ArrayList<Square [][]> makeRandomTrainingBoards(){
+		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
 		for (int i = 0; i <= 5; i++){
 			trainingBoards.add(TicTacToe.createRandomBoard2());
 			//trainingBoards.add(TrainingBoards.getTrainingBoard(i));
@@ -194,9 +204,9 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 			}
 		}
 		ArrayList<Double> moves = activation(neuronLayers.get(0), input);
-		//System.out.println("Evaluated output");
 		return chooseMove(moves);
 	}
+	
 	
 	private ArrayList<Double> activation(NeuronLayer layer, ArrayList<Integer> inputs) {
 		ArrayList<Double> outputs = new ArrayList<Double>();
@@ -212,11 +222,15 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 		return outputs;
 	}
 	
+	
+	
 	private int chooseMove(ArrayList<Double> moves) {
 		int move = moves.indexOf(Collections.max(moves));
 		return move;
 	}
 		
+	
+	
 	private double sigmoid(double input) {
 		double result = 0;
 		result = 1d/(1d + Math.pow(Math.E, -(input)));
