@@ -8,14 +8,14 @@ public class Training {
 	
 	public static void main(String[] args){
 		 train();
-		 // play();
+		 play();
 		//makeRandomBoards();
 	}
 		
 	public static void train(){
 		
-		int populationSize = 40;
-		int numOfIterations = 100;
+		int populationSize = 40; // number of neural networks
+		int numOfIterations = 1000; // number of iterations or generations
 		
 		int inputSize = 9;
 		ArrayList<NeuralNetwork> neuralNetworks = new ArrayList<>();
@@ -23,6 +23,7 @@ public class Training {
 			NeuralNetwork n = new NeuralNetwork(inputSize);
 			neuralNetworks.add(n);
 		}
+		
 		evaluate(neuralNetworks);
 		
 		for (int i = 0; i < numOfIterations; i++){	

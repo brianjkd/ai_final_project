@@ -61,25 +61,41 @@ public class TicTacToe {
 
 	public static boolean hasWon(Square[][] board, Square type) {
 		// check vertical
-		if (board[0][0].get() + board[1][0].get() + board[2][0].get() == 3 * type.get())
+		if (board[0][0].get() == type.get()
+				&& board[1][0].get() == type.get()
+				&& board[2][0].get() ==type.get())
 			return true;
-		if (board[0][1].get() + board[1][1].get() + board[2][1].get() == 3 * type.get())
+		if (board[0][1].get() == type.get()
+				&& board[1][1].get() == type.get()
+				&& board[2][1].get() == type.get())
 			return true;
-		if (board[0][2].get() + board[1][2].get() + board[2][2].get() == 3 * type.get())
+		if (board[0][2].get()  == type.get() 
+				&& board[1][2].get() == type.get()
+				&& board[2][2].get()  == type.get())
 			return true;
 
 		// check horizontal
-		if (board[0][0].get() + board[0][1].get() + board[0][2].get() == 3 * type.get())
+		if (board[0][0].get()  == type.get()
+				&& board[0][1].get()  == type.get()
+				&& board[0][2].get() == type.get())
 			return true;
-		if (board[1][0].get() + board[1][1].get() + board[1][2].get() == 3 * type.get())
+		if (board[1][0].get()  == type.get()
+				&& board[1][1].get()  == type.get()
+				&& board[1][2].get()  == type.get())
 			return true;
-		if (board[2][0].get() + board[2][1].get() + board[2][2].get() == 3 * type.get())
+		if (board[2][0].get()  == type.get()
+				&& board[2][1].get()  == type.get()
+				&& board[2][2].get()  == type.get())
 			return true;
 
 		// check diagonal
-		if (board[0][0].get() + board[1][1].get() + board[2][2].get() == 3 * type.get())
+		if (board[0][0].get()  == type.get()
+				&& board[1][1].get()  == type.get()
+				&& board[2][2].get()  == type.get())
 			return true;
-		if (board[0][2].get() + board[1][1].get() + board[0][0].get() == 3 * type.get())
+		if (board[0][2].get()  == type.get()
+				&& board[1][1].get()  == type.get()
+				&& board[0][0].get()  == type.get())
 			return true;
 		return false;
 	}
