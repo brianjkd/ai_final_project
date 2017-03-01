@@ -7,29 +7,35 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Training {
 	
 	public static void main(String[] args){
-		 train();
-		 play();
+		 // train();
+		  // runSavedAgainstTrainingBoards();
+		    play();
 		//makeRandomBoards();
 	}
 		
 	public static void train(){
 		
 		int populationSize = 40; // number of neural networks
-		int numOfIterations = 1000; // number of iterations or generations
+		int numOfIterations = 2000; // number of iterations or generations
+		
+		ArrayList<Square [][]> trainingBoards = TicTacToe.makeNRandomTrainingBoards(1000);
 		
 		int inputSize = 9;
 		ArrayList<NeuralNetwork> neuralNetworks = new ArrayList<>();
+	
+		
 		for (int i = 0; i < populationSize; i++){
 			NeuralNetwork n = new NeuralNetwork(inputSize);
 			neuralNetworks.add(n);
 		}
 		
-		evaluate(neuralNetworks);
+		evaluate(neuralNetworks, trainingBoards);
 		
-		for (int i = 0; i < numOfIterations; i++){	
-			neuralNetworks = createNextGeneration(neuralNetworks);
+		for (int i = 0; i < numOfIterations; i++){
+			neuralNetworks = createNextGeneration(neuralNetworks, trainingBoards);
 			printBestFitness(neuralNetworks);
 		}
+		
 		NeuralNetwork.saveBestNNToFile(neuralNetworks);
 	}
 	
@@ -37,9 +43,7 @@ public class Training {
 	public static void printBestFitness(ArrayList<NeuralNetwork> neuralNetworks){
 		Collections.sort(neuralNetworks);
 		NeuralNetwork n = neuralNetworks.get(0);
-		System.out.println("Best fitness is : " + n.getAverageFitness() 
-			+ " generationsLived " + n.getGenerationsLived() 
-			+ " total fitness " + n.getTotalFitness());
+		System.out.println("Best fitness is : " + n.getFitness());
 	}
 
 	/**
@@ -47,7 +51,7 @@ public class Training {
 	 * @return the next generation of neural networks
 	 */
 	public static ArrayList<NeuralNetwork> createNextGeneration(
-			ArrayList<NeuralNetwork> neuralNetworks)
+			ArrayList<NeuralNetwork> neuralNetworks, ArrayList<Square [][]> trainingBoards)
 	{
 		ArrayList<NeuralNetwork> nextGeneration =  new ArrayList<>();		
 		
@@ -81,7 +85,7 @@ public class Training {
 			nextGeneration.add(childOne);
 			nextGeneration.add(childTwo);
 		}
-		evaluate(nextGeneration);
+		evaluate(nextGeneration, trainingBoards);
 		return nextGeneration;
 	}
 	
@@ -95,8 +99,8 @@ public class Training {
 			double rand = Math.random();
 			
 			for (NeuralNetwork network : neuralNetworks ){
-				double maxScore = network.getGenerationsLived() * 100d;
-				double probability = network.getAverageFitness() / maxScore + 0.05;
+				double maxScore = 100d ;// network.getGenerationsLived() * 100d;
+				double probability = (network.getFitness() / maxScore) + 0.05;
 					if (rand < probability){
 						chosen = network;				
 					}
@@ -110,20 +114,21 @@ public class Training {
 	 * training boards belonging to each neural network.
 	 * @param neuralNetworks a list of neural networks.
 	 */
-	public static void evaluate(ArrayList<NeuralNetwork> neuralNetworks){
+	public static void evaluate(ArrayList<NeuralNetwork> neuralNetworks, ArrayList<Square [][]> trainingBoards){
 		for (NeuralNetwork n : neuralNetworks){
 			int scoreSum = 0;
-			int trainingBoardSize = n.trainingBoards.size();
-			for(int i = 0; i < trainingBoardSize; i++){
+			// int trainingBoardSize = n.trainingBoards.size();
+			for(int i = 0; i < trainingBoards.size(); i++){
 				/*// if the game is over, create a new random board and train on that
 				if (TicTacToe.isGameOver(n.trainingBoards.get(i))){
 					n.trainingBoards.set(i, TicTacToe.createRandomBoard2());
 				}*/
-				int destination = n.evaluateOutput(n.trainingBoards.get(i));
-				//Vector2D destinationCoordinate = TicTacToe.convertIndexToRowCol(destination);
-				Square aspect = TicTacToe.whoIsTurn(n.trainingBoards.get(i)); // who's turn it is
+				int destination = n.evaluateOutput(trainingBoards.get(i));
+				// Vector2D destinationCoordinate = TicTacToe.convertIndexToRowCol(destination);
+				// Square aspect = TicTacToe.whoIsTurn(n.trainingBoards.get(i)); // who's turn it is
 				
-				int score = TicTacToe.getBoardFitness(n.trainingBoards.get(i), aspect, destination);
+				int score = TicTacToe.getBoardFitness(trainingBoards.get(i), Square.X, destination);
+				// System.out.println("Score " + score);
 				scoreSum += score;
 
 				/*// if move was valid do move and mutate the board
@@ -133,7 +138,9 @@ public class Training {
 							n.trainingBoards.get(i), aspect, destinationCoordinate));
 				}*/
 			}
-			n.addTotalFitness(scoreSum);
+			int averageFitness = scoreSum /  (trainingBoards.size());
+			// System.out.println("score sum " + scoreSum + " average fitness " + averageFitness);
+			n.setFitness(averageFitness);
 		}
 	}
 	
@@ -144,7 +151,7 @@ public class Training {
 		for (int i = 0; i < 50; i++){
 			Square[][] board = TicTacToe.createRandomBoard2();
 			randomBoards.add(board);			
-		}		
+		}
 		
 		for (Square[][] board: randomBoards){
 			TicTacToe.displayBoard(board);
@@ -158,25 +165,51 @@ public class Training {
 	 */
 	public static void play(){
 		NeuralNetwork a = NeuralNetwork.loadNNFromFile();
-		Square [][] board = TicTacToe.createRandomBoard2(); // fresh empty board
+		Square [][] board = TicTacToe.createBoard();
 		
 		int turn = 1;
-		while(!TicTacToe.isGameOver(board)){ // while game is going on
+		while(!TicTacToe.isGameOver(board)){ // while game is going on		
 			Square aspect = TicTacToe.whoIsTurn(board);
-			TicTacToe.displayBoard(board);
-			System.out.println(turn+ ": " + aspect + "'s turn.");
-			System.out.println();
+			
+			if (aspect == Square.X){
+				TicTacToe.displayBoard(board);
+				System.out.println(turn+ ": " + aspect + "'s turn.");
+				System.out.println();
+				int destination = a.evaluateOutput(board);
+				Vector2D destinationCoordinate = TicTacToe.convertIndexToRowCol(destination);
+				if (TicTacToe.isMoveValid(board, destinationCoordinate)){
+					board = TicTacToe.doValidMove(board, aspect, destinationCoordinate);
+				}
+				else {
+					System.out.print("Error. NN could not make a valid move.");
+					System.out.print("Exiting...");
+					return;
+				}
+				turn++;
+			}
+			else { // it's O's turn and we are not training for O
+				// other player does random move
+				TicTacToe.displayBoard(board);
+				System.out.println(turn+ ": " + aspect + "'s turn.");
+				System.out.println();
+				board = TicTacToe.randomMove(board, aspect);
+			}
+		}
+		TicTacToe.displayBoard(board);
+		System.out.println("The Game is Over!");
+	}
+	
+	public static void runSavedAgainstTrainingBoards(){
+		NeuralNetwork a = NeuralNetwork.loadNNFromFile();
+		
+		ArrayList<Square [][]> trainingBoards = NeuralNetwork.makeTrainingBoards();
+		for (Square[][] board : trainingBoards){
 			int destination = a.evaluateOutput(board);
 			Vector2D destinationCoordinate = TicTacToe.convertIndexToRowCol(destination);
-			if (TicTacToe.isMoveValid(board, destinationCoordinate)){
-				board = TicTacToe.doValidMove(board, aspect, destinationCoordinate);
-			}
-			else {
+			if (!TicTacToe.isMoveValid(board, destinationCoordinate)){
 				System.out.print("Error. NN could not make a valid move.");
-				System.out.print("Exiting...");
-				return;
 			}
-			turn++;
-		}	
+		}
 	}
+	
 }

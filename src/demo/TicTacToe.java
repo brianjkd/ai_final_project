@@ -143,7 +143,7 @@ public class TicTacToe {
 		Vector2D destinationCoordinate = convertIndexToRowCol(destination);
 		// invalid move
 		if (!isMoveValid(board, destinationCoordinate)) {
-			return bad;
+			return 0;
 		} else
 			return 100;
 		/*
@@ -194,6 +194,28 @@ public class TicTacToe {
 			board = randomMove(board, aspect);
 		}
 		return board;
+	}
+	
+	
+	public static Square [][] createRandomPlayableBoardXTurn(){
+		Square [][] board = createRandomBoard2();
+		Square aspect = whoIsTurn(board);
+		while(isGameOver(board) || aspect !=  Square.X){
+			board = createRandomBoard2();
+			aspect = whoIsTurn(board);
+		}
+		return board;
+	}
+	
+	
+	
+	public static ArrayList<Square [][]> makeNRandomTrainingBoards(int n){
+		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
+		for (int i = 0; i <= n; i++){
+			Square [][] board = TicTacToe.createRandomPlayableBoardXTurn();
+			trainingBoards.add(board);
+		}
+		return trainingBoards;
 	}
 	
 

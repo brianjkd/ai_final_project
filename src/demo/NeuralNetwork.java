@@ -15,27 +15,26 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	private static final long serialVersionUID = 2751926090659843399L;
 	private static String PATH = "trainingData/neuralNetwork.ser";
 	ArrayList<NeuronLayer> neuronLayers;
-	private int totalFitness;
+	private int fitness;
 	private int generationsLived;
 	
 	ArrayList<Square[][]> trainingBoards = new ArrayList<>();
 	
-	public int getAverageFitness(){
-		return totalFitness / (generationsLived * trainingBoards.size());
+	public int getFitness(){
+		return fitness;
+		// return totalFitness / (generationsLived * trainingBoards.size());
 	}
 	
-	public int getTotalFitness(){
-		return totalFitness;
+	public void setFitness(int fitness){
+		this.fitness = fitness;
 	}
+
 	
 	public int getGenerationsLived(){
 		return this.generationsLived;		
 	}
 	
-	public void addTotalFitness(int totalFitness){
-		this.totalFitness += totalFitness;
-		this.generationsLived++;
-	}
+
 	
 	public void crossover(NeuralNetwork b){
 		// figure out our cut points
@@ -75,7 +74,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	
 	public static void saveBestNNToFile(ArrayList<NeuralNetwork> neuralNetworks){
 		Collections.sort(neuralNetworks);
-		System.out.println("Total fitness of saved neural network: " + neuralNetworks.get(0).getAverageFitness());
+		System.out.println("The fitness of saved neural network: " + neuralNetworks.get(0).getFitness());
 		saveNNToFile(neuralNetworks.get(0));		
 	}
 	
@@ -150,11 +149,11 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	}
 	
 	
-	public ArrayList<Square [][]> makeTrainingBoards(){
+	public static ArrayList<Square [][]> makeTrainingBoards(){
 		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
 		for (int i = 1; i <= 10; i++){
-			//trainingBoards.add(TicTacToe.createRandomBoard2());
-			trainingBoards.add(TrainingBoards.getTrainingBoard(i));
+			// trainingBoards.add(TicTacToe.createRandomBoard2());
+			// trainingBoards.add(TrainingBoards.getTrainingBoard(i));
 		}
 		return trainingBoards;
 	}
@@ -244,10 +243,10 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	
 	@Override
 	public int compareTo(NeuralNetwork other){
-		if (this.getAverageFitness() > other.getAverageFitness()){
+		if (this.getFitness() > other.getFitness()){
 			return -1; // this is greater so comes first
 		}
-		else if (this.getAverageFitness() < other.getAverageFitness()){
+		else if (this.getFitness() < other.getFitness()){
 			return 1; // this is less some comes after
 		}
 		else {
