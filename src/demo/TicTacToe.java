@@ -294,5 +294,19 @@ public class TicTacToe {
 
 		return randomBoard;
 	}
+	
+	public static Square[][] invertBoard(Square[][] board){
+		for(int i = 0; i < 3; i++){
+			for(int j = 0; j < 3; j++){
+				if(board[i][j] == Square.X){
+					board[i][j] = Square.O;
+				}
+				else if(board[i][j] == Square.O){
+					board[i][j] = Square.X;
+				}
+			}
+		}
+		return board;
+	}
 
 }
