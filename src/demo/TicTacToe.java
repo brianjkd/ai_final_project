@@ -95,15 +95,15 @@ public class TicTacToe {
 			return true;
 		if (board[0][2].get()  == type.get()
 				&& board[1][1].get()  == type.get()
-				&& board[0][0].get()  == type.get())
+				&& board[2][0].get()  == type.get())
 			return true;
 		return false;
 	}
 
-	private static int getBoardSum(Square[][] board, Square type) {
+/*	private static int getBoardSum(Square[][] board, Square type) {
 		// 81 is the value of a board where all squares are of the given type.
 		// This is just to avoid the sum being negative (if all square of not of
-		// the given type).
+		// the given type). 
 		int sum = 81;
 
 		// check vertical
@@ -121,7 +121,41 @@ public class TicTacToe {
 		sum += board[0][2].get() + board[1][1].get() + board[0][0].get();
 
 		return sum;
+	}*/
+	
+	
+	private static int howGoodWasMove(Square[][] board, Square aspect, Vector2D destination) {
+		// If we made a move that did not result in a win,
+		// check to see if a move that could result in a win was possible.
+		// If true, return a low fitness score
+		Square [][] result = doValidMove(board, aspect, destination);
+		if (!hasWon(result, aspect)){
+			ArrayList<Vector2D> emptySquares = getEmptyCoordinates(board);
+			for (Vector2D empty : emptySquares){
+				Square [][] alternateBoard = doValidMove(board, aspect, empty);
+				if (hasWon(alternateBoard, aspect)){
+					return 0; // not a good decision so bad fitness					
+				}	
+			}
+		}
+		return 100; // move was fine
 	}
+	
+	
+	
+	public static ArrayList<Vector2D> getEmptyCoordinates(Square [][] board){
+		ArrayList<Vector2D> coords = new ArrayList<>();
+		for (int i = 0; i < board[0].length; i++) {
+			for (int j = 0; j < board[0].length; j++) {
+				if ( board[i][j] == Square.EMPTY){
+					Vector2D c = new Vector2D(i,j);
+					coords.add(c);
+				}
+			}
+		}
+		return coords;		
+	}
+	
 
 	public static boolean isMoveValid(Square[][] board, Vector2D destination) {
 		return board[destination.row][destination.col] == Square.EMPTY;
@@ -137,15 +171,16 @@ public class TicTacToe {
 
 
 	public static int getBoardFitness(Square[][] board, Square aspect, int destination) {
-		int bad = 0;
-		int winValue = 100;
-
 		Vector2D destinationCoordinate = convertIndexToRowCol(destination);
 		// invalid move
 		if (!isMoveValid(board, destinationCoordinate)) {
 			return 0;
-		} else
+		} 
+		else {
 			return 100;
+			//return howGoodWasMove(board, aspect, destinationCoordinate);
+		}
+			
 		/*
 		 * Square [][] resultingBoard = doValidMove(board, aspect,
 		 * destinationCoordinate);
@@ -185,29 +220,29 @@ public class TicTacToe {
 	}
 
 	
-	public static Square [][] createRandomBoard2(){
-		Square [][] board = createBoard();
-		Random random = new Random();
-		int numberOfMoves = random.nextInt(9);
-		for (int i = 0; i < numberOfMoves; i++){
-			Square aspect = whoIsTurn(board); 
-			board = randomMove(board, aspect);
-		}
+	public static Square [][] createRandomBoard(){
+		Square [][] board;
+		do{
+			board = createBoard();
+			Random random = new Random();
+			int numberOfMoves = random.nextInt(9);
+			for (int i = 0; i < numberOfMoves; i++){
+				Square aspect = whoIsTurn(board); 
+				board = randomMove(board, aspect);
+			}
+		} while(isGameOver(board));
 		return board;
 	}
 	
-	
 	public static Square [][] createRandomPlayableBoardXTurn(){
-		Square [][] board = createRandomBoard2();
+		Square [][] board = createRandomBoard();
 		Square aspect = whoIsTurn(board);
-		while(isGameOver(board) || aspect !=  Square.X){
-			board = createRandomBoard2();
+		while(aspect !=  Square.X){
+			board = createRandomBoard();
 			aspect = whoIsTurn(board);
 		}
 		return board;
 	}
-	
-	
 	
 	public static ArrayList<Square [][]> makeNRandomTrainingBoards(int n){
 		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
@@ -218,7 +253,6 @@ public class TicTacToe {
 		return trainingBoards;
 	}
 	
-
 	static Square whoIsTurn(Square[][] board) {
 		int countX = 0;
 		int countO = 0;
@@ -238,61 +272,6 @@ public class TicTacToe {
 		}
 		System.err.println("Should not be null!");
 		return null;
-	}
-
-	static Square[][] createRandomBoard() {
-		Square[][] randomBoard = new Square[3][3];
-		boolean validBoard = true;
-
-		do {
-			Random random = new Random();
-			int numMoves = random.nextInt(7);
-			int turn = 1; // 1 for X, will switch to -1 for O
-			int[] board1d = new int[9];
-			ArrayList<Integer> availableMoves = new ArrayList<Integer>() {
-				{
-					add(1);
-					add(2);
-					add(3);
-					add(4);
-					add(5);
-					add(6);
-					add(7);
-					add(8);
-					add(9);
-				}
-			};
-
-			for (int i = 0; i < numMoves; i++) {
-				int randomMove = availableMoves.remove(random.nextInt(availableMoves.size()-1));
-				board1d[randomMove] = turn;
-
-				turn *= -1;
-			}
-
-			int index = 0;
-			for (int i = 0; i < randomBoard[0].length; i++) {
-				for (int j = 0; j < randomBoard[0].length; j++) {
-					if (board1d[index] == 0) {
-						randomBoard[i][j] = Square.EMPTY;
-					} else if (board1d[index] == 1) {
-						randomBoard[i][j] = Square.X;
-					} else {
-						randomBoard[i][j] = Square.O;
-					}
-					index++;
-				}
-			}
-			
-			if (hasWon(randomBoard, Square.X)) {
-				validBoard = false;
-			}
-			else if (hasWon(randomBoard, Square.O)) {
-				validBoard = false;
-			}
-		} while (validBoard == false);
-
-		return randomBoard;
 	}
 
 }
