@@ -57,7 +57,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	}
 	
 	public void mutate(){
-		double rate = 0.1; // mutation 10% of all weights
+		double rate = 0.2; // mutation 10% of all weights
 		for (NeuronLayer neuronLayer : neuronLayers){
 			for (Neuron n : neuronLayer.neurons){
 				for (int i = 0 ; i < n.weights.size(); i ++){
@@ -88,8 +88,8 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	         System.out.println("Serialized data is saved in " + PATH);
 	      }catch(IOException i) {
 	         i.printStackTrace();
-	      }
-	   }
+      }
+   }
    
    public static NeuralNetwork loadNNFromFile(){
 	   NeuralNetwork nn = null;
@@ -162,35 +162,38 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	public ArrayList<Square [][]> makeRandomTrainingBoards(){
 		ArrayList<Square[][]> trainingBoards = new ArrayList<>();
 		for (int i = 0; i <= 5; i++){
-			trainingBoards.add(TicTacToe.createRandomBoard2());
+			trainingBoards.add(TicTacToe.createRandomBoard());
 			//trainingBoards.add(TrainingBoards.getTrainingBoard(i));
 		}
 		return trainingBoards;
 	}
 	
 	
-	public NeuralNetwork(int inputSize) {
+	public NeuralNetwork(int inputSize, int outputSize, int hiddenLayerNeuronsSize) {	
 		neuronLayers = new ArrayList<>();
 		trainingBoards = makeTrainingBoards();
 		generationsLived = 0;
 	
 		/**
-		 * Create Hidden Layer
+		 * Create One Hidden Layer
 		 */
-/*		ArrayList<Neuron> hiddenNeurons = new ArrayList<>();
-		for (int i = 0; i < input.size(); i++) {
-			Neuron n = new Neuron(input.size());
-			hiddenNeurons.add(n);
+		if (hiddenLayerNeuronsSize > 0){
+			ArrayList<Neuron> hiddenLayerNeurons = new ArrayList<>();
+			for (int j = 0; j < hiddenLayerNeuronsSize; j ++){
+				Neuron n = new Neuron(9);
+				hiddenLayerNeurons.add(n);
+			}
+			NeuronLayer hiddenLayer = new NeuronLayer(hiddenLayerNeurons);
+			neuronLayers.add(hiddenLayer);	
 		}
-		NeuronLayer hiddenLayer = new NeuronLayer(hiddenNeurons);
-		neuronLayers.add(hiddenLayer);*/
-
 		/**
 		 * Create Output Layer
 		 */
 		ArrayList<Neuron> outputNeurons = new ArrayList<>();
+		int numOfEdgesPerOutputNeuron = neuronLayers.size() == 0
+				? inputSize : neuronLayers.get(0).neurons.size();
 		for (int i = 0; i < inputSize; i++) {
-			Neuron n = new Neuron(inputSize);
+			Neuron n = new Neuron(numOfEdgesPerOutputNeuron);
 			outputNeurons.add(n);
 		}
 		NeuronLayer outputLayer = new NeuronLayer(outputNeurons);
@@ -198,31 +201,39 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	}
 	
 	public int evaluateOutput(Square [][] inputBoard){
-		ArrayList<Integer> input = new ArrayList<>();
+		ArrayList<Double> input = new ArrayList<>();
 		for (int i = 0; i < inputBoard.length; i++) {
 			for (int j = 0; j < inputBoard[0].length; j++) {
-				input.add(inputBoard[i][j].get());
+				input.add((double) inputBoard[i][j].get());
 			}
 		}
-		ArrayList<Double> moves = activation(neuronLayers.get(0), input);
+		ArrayList<Double> moves = activation(neuronLayers, input);
 		return chooseMove(moves);
 	}
 	
 	
-	private ArrayList<Double> activation(NeuronLayer layer, ArrayList<Integer> inputs) {
-		ArrayList<Double> outputs = new ArrayList<Double>();
-		
-		for (Neuron n : layer.neurons) {
-			double sum = 0;
-			for (int i = 0; i < inputs.size(); i++) {
-				sum += inputs.get(i) * n.weights.get(i);
+	private ArrayList<Double> activation(ArrayList<NeuronLayer> layers, ArrayList<Double> inputs) {
+		ArrayList<Double> outputs = inputs;
+		for (NeuronLayer layer : layers){
+			// System.out.println("Activating Layer. There are " + layers.size() + " layers.");
+			inputs = outputs;
+			outputs = new ArrayList<>();
+			for (Neuron n : layer.neurons) {
+				double sum = 0;
+				for (int i = 0; i < inputs.size(); i++) {
+					sum += inputs.get(i) * n.weights.get(i);
+				}
+				// System.out.println(sum);
+				sum = sigmoid(sum);
+				outputs.add(sum);
 			}
-			// System.out.println(sum);
-			sum = sigmoid(sum);
-		
-			outputs.add(sum);
+			// printOutputs(outputs);
 		}
 		return outputs;
+	}
+	
+	private static void printOutputs(ArrayList<Double> outputs){
+		System.out.println("Outputs Size: " + outputs.size());	
 	}
 	
 	

@@ -23,7 +23,8 @@ public class Neuron implements Serializable{
 	
 	
 	public static double genRandomWeight(){
-		return ThreadLocalRandom.current().nextDouble(0, 2) - 1d;
+		 return ThreadLocalRandom.current().nextDouble(0, 2) - 1d;
+		// return ThreadLocalRandom.current().nextDouble(0, 1);
 	}
 	
 	/** 
