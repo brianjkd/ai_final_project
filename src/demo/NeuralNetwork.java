@@ -15,17 +15,17 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	private static final long serialVersionUID = 2751926090659843399L;
 	private static String PATH = "trainingData/neuralNetwork.ser";
 	ArrayList<NeuronLayer> neuronLayers;
-	private int fitness;
+	private double fitness;
 	private int generationsLived;
 	
 	ArrayList<Square[][]> trainingBoards = new ArrayList<>();
 	
-	public int getFitness(){
+	public double getFitness(){
 		return fitness;
 		// return totalFitness / (generationsLived * trainingBoards.size());
 	}
 	
-	public void setFitness(int fitness){
+	public void setFitness(double fitness){
 		this.fitness = fitness;
 	}
 
@@ -61,6 +61,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 		for (NeuronLayer neuronLayer : neuronLayers){
 			for (Neuron n : neuronLayer.neurons){
 				for (int i = 0 ; i < n.weights.size(); i ++){
+					if (i == 0) continue;
 					double rand = Math.random();
 					if (rand <= rate){
 						// mutate the weight
@@ -169,7 +170,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	}
 	
 	
-	public NeuralNetwork(int inputSize, int outputSize, int hiddenLayerNeuronsSize) {	
+	public NeuralNetwork(int inputSize, int outputSize, int hiddenLayerNeuronsSize) {
 		neuronLayers = new ArrayList<>();
 		trainingBoards = makeTrainingBoards();
 		generationsLived = 0;
@@ -180,7 +181,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 		if (hiddenLayerNeuronsSize > 0){
 			ArrayList<Neuron> hiddenLayerNeurons = new ArrayList<>();
 			for (int j = 0; j < hiddenLayerNeuronsSize; j ++){
-				Neuron n = new Neuron(9);
+				Neuron n = new Neuron(inputSize);
 				hiddenLayerNeurons.add(n);
 			}
 			NeuronLayer hiddenLayer = new NeuronLayer(hiddenLayerNeurons);
@@ -192,7 +193,7 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 		ArrayList<Neuron> outputNeurons = new ArrayList<>();
 		int numOfEdgesPerOutputNeuron = neuronLayers.size() == 0
 				? inputSize : neuronLayers.get(0).neurons.size();
-		for (int i = 0; i < inputSize; i++) {
+		for (int i = 0; i < outputSize; i++) {
 			Neuron n = new Neuron(numOfEdgesPerOutputNeuron);
 			outputNeurons.add(n);
 		}
@@ -200,10 +201,27 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 		neuronLayers.add(outputLayer);
 	}
 	
-	public int evaluateOutput(Square [][] inputBoard){
+	public int evaluateOutput(Square [][] inputBoard, int inputSize){
 		ArrayList<Double> input = new ArrayList<>();
 		for (int i = 0; i < inputBoard.length; i++) {
 			for (int j = 0; j < inputBoard[0].length; j++) {
+				if (inputSize == 18){
+				double X = 0d;
+				double O = 0d;
+				if (inputBoard[i][j] == Square.X) {
+					X = 1d;
+					//O = 0d;
+				}
+				else if (inputBoard[i][j] == Square.O) 
+					{
+						O = 1d;
+						//X = 0d;
+					}
+				
+				input.add(X);
+				input.add(O);
+				}
+				else
 				input.add((double) inputBoard[i][j].get());
 			}
 		}
@@ -214,11 +232,21 @@ public class NeuralNetwork implements Comparable<NeuralNetwork>, Serializable {
 	
 	private ArrayList<Double> activation(ArrayList<NeuronLayer> layers, ArrayList<Double> inputs) {
 		ArrayList<Double> outputs = inputs;
-		for (NeuronLayer layer : layers){
+		//for (NeuronLayer layer : layers){
+		for (int j = 0; j < layers.size(); j ++){
+			NeuronLayer layer = layers.get(j);
 			// System.out.println("Activating Layer. There are " + layers.size() + " layers.");
 			inputs = outputs;
 			outputs = new ArrayList<>();
 			for (Neuron n : layer.neurons) {
+				// sad attempt at dropout
+				/*if (j == 1 && layers.size() == 2){ // we are in the hidden layer
+					double rand = Math.random();
+					if (rand <= 0.5d){
+						continue; // skip this with dropout
+					}
+					
+				}*/
 				double sum = 0;
 				for (int i = 0; i < inputs.size(); i++) {
 					sum += inputs.get(i) * n.weights.get(i);

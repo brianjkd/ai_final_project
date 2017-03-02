@@ -177,8 +177,8 @@ public class TicTacToe {
 			return 0;
 		} 
 		else {
-			return 100;
-			//return howGoodWasMove(board, aspect, destinationCoordinate);
+			 return 100;
+			// return howGoodWasMove(board, aspect, destinationCoordinate);
 		}
 			
 		/*
@@ -199,7 +199,8 @@ public class TicTacToe {
 		 * 
 		 * // int sum = getBoardSum(resultingBoard, aspect); return 100; //
 		 * valid move
-		 */ }
+		 */ 
+		}
 
 	public static Square[][] randomMove(Square[][] board, Square aspect) {
 		ArrayList<Vector2D> availableMoves = new ArrayList<>();
