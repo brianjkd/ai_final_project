@@ -1,4 +1,4 @@
-package demo;
+package tictactoe;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,22 +14,17 @@ public class Neuron implements Serializable{
 		this.weights = new ArrayList<>();
 		// initialize with random weights
 		for (int i = 0; i < numberOfInputs + 1; i++){
-			//if (i == 0) {weights.add(1.0d);}
-			//else {
-			//double randWeight = Math.random();
-			// a weight between -1 and 1
 			double randWeight = genRandomWeight();
 			weights.add(randWeight);
-			
-			//}
 		}
 	}
 	
-	
+	/**
+	 * 
+	 * @return double between -1 and 1 inclusively
+	 */
 	public static double genRandomWeight(){
-		 return ThreadLocalRandom.current().nextDouble(0, 2) - 1d;
-		//  return ThreadLocalRandom.current().nextDouble(0, 1);
-		// return 1.0d;
+		 return ThreadLocalRandom.current().nextDouble(0, 2) - 1d; // [-1,1]
 	}
 	
 	/** 

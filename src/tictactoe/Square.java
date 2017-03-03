@@ -1,4 +1,4 @@
-package demo;
+package tictactoe;
 
 public enum Square {
     X(0), O(-1), EMPTY(2);

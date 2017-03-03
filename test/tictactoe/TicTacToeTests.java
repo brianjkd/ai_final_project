@@ -1,4 +1,4 @@
-package demo;
+package tictactoe;
 
 import static org.junit.Assert.*;
 
@@ -19,11 +19,10 @@ public class TicTacToeTests {
 	}
 	
 	
-	
 	@Test
 	public void allRandomTrainingBoardsAreXsTurn() {
 		int n = 10;
-		ArrayList<Square [][]> boards = TicTacToe.makeNRandomTrainingBoards(n);
+		ArrayList<Square [][]> boards = TicTacToe.makeNRandomTrainingBoardsXTurn(n);
 		
 		for (Square [][] board : boards){
 			Square aspect = TicTacToe.whoIsTurn(board);

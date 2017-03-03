@@ -1,4 +1,4 @@
-package demo;
+package tictactoe;
 import java.io.Serializable;
 import java.util.ArrayList;
 public class NeuronLayer implements Serializable {

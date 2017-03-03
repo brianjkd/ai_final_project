@@ -1,4 +1,4 @@
-package demo;
+package tictactoe;
 
 
 public class Vector2D{
