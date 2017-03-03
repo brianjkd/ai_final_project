@@ -6,8 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Training {
 
-	private static final int OUTPUTSIZE = 9;
-	private static final int INPUTSIZE = 9; // can also be 18, then binary input will be used
+	public static final int OUTPUTSIZE = 9;
+	public static final int INPUTSIZE = 9; // can also be 18, then binary input will be used
 	
 	public static void trainWithGeneticAlgorithm(int populationSize, int numOfGenerations,
 			int trainingSize, int hiddenLayerNeuronSize, FitnessFunctionType fitnessType){
